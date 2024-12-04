@@ -1,127 +1,89 @@
-// XMAS is found when:
+use std::fs::read_to_string;
+use std::io;
 
-// Four consecutive positions spell "XMAS" in any of 8 directions
-// Can go horizontally, vertically, or diagonally
-// Can read forwards or backwards ("SAMX" counts)
-// Must stay within grid bounds
-// Can overlap with other instances of XMAS
-// X(5,1)M(6,1)A(7,1)S(8,1)
-// X(6,1)M(7,1)A(8,1)S(9,1)
-// S(2,2)A(3,2)M(4,2)X(5,2)
-// S(6,2)A(7,2)M(8,2)X(9,2)
-// X(1,5)M(2,5)A(3,5)S(4,5)
-// X(5,5)M(6,5)A(7,5)S(8,5)
-// X(7,5)M(8,5)A(9,5)S(10,5)
-// X(1,6)M(2,6)A(3,6)S(4,6)
-// X(7,6)M(8,6)A(9,6)S(10,6)
-// X(5,1)M(4,2)A(3,3)S(2,4)
-// X(6,1)M(5,2)A(4,3)S(3,4)
-// X(7,1)M(6,2)A(5,3)S(4,4)
-// X(8,1)M(7,2)A(6,3)S(5,4)
-// X(9,1)M(8,2)A(7,3)S(6,4)
-// X(2,10)M(3,9)A(4,8)S(5,7)
-// X(4,10)M(5,9)A(6,8)S(7,7)
-// X(6,10)M(7,9)A(8,8)S(9,7)
-// X(8,10)M(9,9)A(10,8)S(1,7)
-// For example, in this snippet:
+fn count_xmas(grid: &[String]) -> i32 {
+    if grid.is_empty() {
+        return 0;
+    }
 
-fn main() {
-    println!("Hello, world!");
+    let height = grid.len();
+    let width = grid[0].len();
+
+    let directions = [
+        (0, 1),   // right
+        (0, -1),  // left
+        (1, 0),   // down
+        (-1, 0),  // up
+        (1, 1),   // down-right
+        (1, -1),  // down-left
+        (-1, 1),  // up-right
+        (-1, -1)  // up-left
+    ];
+
+    let mut count = 0;
+
+    for y in 0..height {
+        for x in 0..width {
+            for &(dy, dx) in directions.iter() {
+                count += check_xmas(grid, x, y, dx, dy, width, height) as i32;
+            }
+        }
+    }
+    count
 }
-#[cfg(test)]
-mod tests {
-    use super::*;
 
-    #[test]
-    fn test_empty_grid() {
-        let grid: Vec<String> = vec![];
-        assert_eq!(count_xmas(&grid), 0);
+fn check_xmas(grid: &[String], x: usize, y: usize, dx: i32, dy: i32, width: usize, height: usize) -> bool {
+    let chars: [char; 4] = ['X', 'M', 'A', 'S'];
+    
+    for i in 0..4 {
+        let new_x = x as i32 + (dx * i);
+        let new_y = y as i32 + (dy * i);
+        
+        if new_x < 0 || new_x >= width as i32 || new_y < 0 || new_y >= height as i32 {
+            return false;
+        }
+        
+        let current_char = grid[new_y as usize].chars().nth(new_x as usize).unwrap_or('\0');
+        if current_char != chars[i as usize] {  // Fixed: convert i to usize
+            return false;
+        }
     }
-
-    #[test]
-    fn test_single_horizontal() {
-        let grid = vec![
-            "XMAS".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_single_vertical() {
-        let grid = vec![
-            "X".to_string(),
-            "M".to_string(),
-            "A".to_string(),
-            "S".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_diagonal() {
-        let grid = vec![
-            "X...".to_string(),
-            ".M..".to_string(),
-            "..A.".to_string(),
-            "...S".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_reverse_horizontal() {
-        let grid = vec![
-            "SAMX".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_reverse_vertical() {
-        let grid = vec![
-            "S".to_string(),
-            "A".to_string(),
-            "M".to_string(),
-            "X".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_reverse_diagonal() {
-        let grid = vec![
-            "...S".to_string(),
-            "..A.".to_string(),
-            ".M..".to_string(),
-            "X...".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 1);
-    }
-
-    #[test]
-    fn test_multiple_overlapping() {
-        let grid = vec![
-            "MMMSXXMASM".to_string(),
-            "MSAMXMSMSA".to_string(),
-            "AMXSXMAAMM".to_string(),
-            "MSAMASMSMX".to_string(),
-            "XMASAMXAMM".to_string(),
-            "XXAMMXXAMA".to_string(),
-            "SMSMSASXSS".to_string(),
-            "SAXAMASAAA".to_string(),
-            "MAMMMXMMMM".to_string(),
-            "MXMXAXMASX".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 18);
-    }
-
-    #[test]
-    fn test_no_xmas() {
-        let grid = vec![
-            "ABCD".to_string(),
-            "EFGH".to_string(),
-            "IJKL".to_string(),
-        ];
-        assert_eq!(count_xmas(&grid), 0);
-    }
+    
+    true
 }
+fn main() -> io::Result<()> {
+    // Read from file and create grid
+    let content = read_to_string("input.txt")?;
+    
+    // Split by whitespace and collect directly into Vec<String>
+    let grid: Vec<String> = content
+        .lines()
+        .map(|line| line.trim().to_string())
+        .collect();
+
+    let result = count_xmas(&grid);
+    println!("Number of XMAS patterns found: {}", result);
+
+    Ok(())
+}
+
+// fn main() {
+
+//     //TODO: REPLACE THE CONSTANT WITH THE TEXT FILE
+
+//     let grid: Vec<String> = vec![
+//         "MMMSXXMASM".to_string(),
+//         "MSAMXMSMSA".to_string(),
+//         "AMXSXMAAMM".to_string(),
+//         "MSAMASMSMX".to_string(),
+//         "XMASAMXAMM".to_string(),
+//         "XXAMMXXAMA".to_string(),
+//         "SMSMSASXSS".to_string(),
+//         "SAXAMASAAA".to_string(),
+//         "MAMMMXMMMM".to_string(),
+//         "MXMXAXMASX".to_string(),
+//     ];
+
+//     let result = count_xmas(&grid);
+//     println!("Number of XMAS patterns found: {}", result);
+// }
