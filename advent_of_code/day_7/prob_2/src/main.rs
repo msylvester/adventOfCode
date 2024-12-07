@@ -1,6 +1,7 @@
 use std::fs::read_to_string;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::time::Instant;  // Added for timing
 
 #[derive(Clone, Copy)]
 enum Operator {
@@ -84,15 +85,34 @@ fn solve_calibration(input: &str) -> i64 {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Start timing the entire program
+    let start_time = Instant::now();
+
     // Get the current executable's directory
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("input.txt");
     
     println!("Looking for input file at: {}", path.display());
     
+    // Time file reading separately
+    let file_start = Instant::now();
     let input = read_to_string(&path)?;
+    let file_duration = file_start.elapsed();
+
+    // Time the calculation separately
+    let calc_start = Instant::now();
     let result = solve_calibration(&input);
+    let calc_duration = calc_start.elapsed();
+
+    // Get total time
+    let total_duration = start_time.elapsed();
+
     println!("Solution: {}", result);
+    println!("\nTiming breakdown:");
+    println!("File reading: {:?}", file_duration);
+    println!("Calculation: {:?}", calc_duration);
+    println!("Total time: {:?}", total_duration);
+    
     Ok(())
 }
 

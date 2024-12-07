@@ -3,6 +3,15 @@
 ## Problem Description 📝
 The engineers need help repairing a rope bridge by determining which test values could be produced by placing combinations of operators into their calibration equations. Each line of input represents a single equation, with the test value appearing before the colon.
 
+### Project Structure 📂
+```
+prob_1/
+├── README.md
+├── input.txt
+└── src/
+    └── main.rs
+```
+
 ### Rules ⚖️
 - Only two operators are available: add (`+`) and multiply (`*`)
 - Operators are evaluated left-to-right (no operator precedence)
@@ -33,13 +42,26 @@ The solution involves:
 ## Correct Answer ⭐
 The solution for Part 1 is: 8401132154762
 
+## Performance Metrics ⚡
+Measured on debugging build:
+- File reading: ~274µs
+- Calculation: ~83ms
+- Total execution time: ~83.5ms
+
 ## Running the Code 🚀
 1. Place your input in `input.txt` in the project root
 2. Run with `cargo run`
-3. The program will output the total calibration result
+3. The program will output:
+   - File path being used
+   - Solution value
+   - Detailed timing breakdown
 
 ## Testing 🧪
 The code includes unit tests to verify:
 - Expression evaluation
 - Operator combination generation
 - Test case validation
+
+## Notes 📓
+- Performance metrics may vary based on hardware and build type (debug vs release)
+- Part 1 is significantly faster than Part 2 due to fewer operator combinations being tested

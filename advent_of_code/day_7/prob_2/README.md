@@ -3,6 +3,15 @@
 ## Problem Description 📝
 Building on Part 1, the engineers discovered a third operator being held by well-hidden elephants 🐘. This new operator changes how equations can be solved and significantly affects the total calibration result.
 
+### Project Structure 📂
+```
+prob_2/
+├── README.md
+├── input.txt
+└── src/
+    └── main.rs
+```
+
 ### New Operator 🔧
 - Concatenation operator (`||`)
 - Combines digits from left and right inputs into a single number
@@ -31,10 +40,19 @@ The solution extends Part 1 with:
 ## Correct Answer ⭐⭐
 The solution for Part 2 is: 95297119227552
 
+## Performance Metrics ⚡
+Measured on debugging build:
+- File reading: ~190µs
+- Calculation: ~7.86s
+- Total execution time: ~7.86s
+
 ## Running the Code 🚀
 1. Place your input in `input.txt` in the project root
 2. Run with `cargo run`
-3. The program will output the new total calibration result
+3. The program will output:
+   - File path being used
+   - Solution value
+   - Detailed timing breakdown
 
 ## Testing 🧪
 Additional test cases verify:
@@ -45,3 +63,4 @@ Additional test cases verify:
 ## Notes 📓
 - The solution includes all valid equations from Part 1 plus new equations made possible by concatenation
 - Base-3 counting is used to generate all possible operator combinations
+- Performance metrics may vary based on hardware and build type (debug vs release)
